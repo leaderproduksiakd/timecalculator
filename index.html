@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#17131f">
+  <meta name="description" content="Time Calculator bergaya Pixel Art untuk menghitung durasi dalam menit.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>PIXEL TIME CALC</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    :root{
+      --bg:#100d16;
+      --panel:#1b1724;
+      --panel2:#252031;
+      --line:#4b3f5e;
+      --text:#fff7df;
+      --muted:#aaa0bb;
+      --yellow:#ffd447;
+      --pink:#ff5c8a;
+      --cyan:#57e7ff;
+      --green:#65e59a;
+      --shadow:#08070b;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+    body{
+      font-family:"Press Start 2P", monospace;
+      image-rendering:pixelated;
+      padding:20px;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;inset:0;pointer-events:none;opacity:.12;
+      background:
+        linear-gradient(90deg,transparent 50%,rgba(255,255,255,.08) 50%),
+        linear-gradient(transparent 50%,rgba(255,255,255,.08) 50%);
+      background-size:8px 8px;
+      z-index:-1;
+    }
+
+    .app{width:min(760px,100%);margin:auto}
+
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;gap:14px;
+      margin-bottom:18px;
+    }
+    .brand{
+      font-size:clamp(14px,3vw,21px);line-height:1.5;
+      color:var(--yellow);
+      text-shadow:4px 4px 0 #6d5310;
+    }
+    .pixel-dot{
+      width:18px;height:18px;background:var(--pink);
+      box-shadow:5px 0 var(--pink),0 5px var(--pink),5px 5px var(--pink),10px 5px var(--pink),5px 10px var(--pink);
+      margin:8px 8px 8px 0;
+      flex:none;
+    }
+
+    .card{
+      background:var(--panel);
+      border:4px solid var(--line);
+      box-shadow:8px 8px 0 var(--shadow), inset 0 0 0 3px #0b0910;
+      padding:22px;
+      margin-bottom:18px;
+    }
+
+    .title{
+      color:var(--cyan);
+      font-size:12px;
+      margin-bottom:22px;
+      line-height:1.8;
+    }
+
+    .time-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .field label{
+      display:block;
+      color:var(--muted);
+      font-size:10px;
+      margin-bottom:10px;
+    }
+
+    .time-row{
+      display:grid;
+      grid-template-columns:1fr 22px 1fr;
+      align-items:center;
+      gap:8px;
+    }
+    .colon{text-align:center;color:var(--yellow);font-size:18px}
+
+    input{
+      width:100%;
+      min-width:0;
+      background:#0e0b13;
+      color:var(--text);
+      border:4px solid var(--line);
+      box-shadow:4px 4px 0 #08070b;
+      padding:16px 10px;
+      font-family:inherit;
+      font-size:18px;
+      outline:none;
+      text-align:center;
+    }
+    input:focus{border-color:var(--cyan);box-shadow:4px 4px 0 #0a6d7b}
+    input::placeholder{color:#554c61}
+
+    .actions{display:flex;gap:12px;margin-top:22px}
+    button{
+      border:0;
+      font-family:inherit;
+      font-size:10px;
+      cursor:pointer;
+      padding:15px 14px;
+      transition:transform .08s;
+    }
+    button:active{transform:translate(3px,3px)}
+    .btn-calc{
+      flex:1;background:var(--yellow);color:#17110a;
+      box-shadow:6px 6px 0 #806814;
+    }
+    .btn-reset{
+      background:var(--panel2);color:var(--text);
+      border:3px solid var(--line);
+      box-shadow:4px 4px 0 #08070b;
+    }
+
+    .result{
+      text-align:center;
+      padding:24px 16px 28px;
+      background:#14111b;
+      border:4px solid var(--cyan);
+      box-shadow:6px 6px 0 #086879;
+    }
+    .result small{display:block;color:var(--muted);font-size:9px;margin-bottom:14px}
+    .minutes{
+      font-size:clamp(30px,9vw,58px);
+      color:var(--green);
+      text-shadow:5px 5px 0 #205d3d;
+      line-height:1.3;
+      word-break:break-word;
+    }
+    .unit{font-size:11px;color:var(--text);margin-left:6px}
+
+    .details{
+      margin-top:20px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+    .detail{
+      background:var(--panel2);
+      border:3px solid var(--line);
+      padding:13px 8px;
+      text-align:center;
+    }
+    .detail b{display:block;font-size:13px;color:var(--yellow);margin-bottom:8px}
+    .detail span{font-size:8px;color:var(--muted);line-height:1.5}
+
+    .history-title{
+      color:var(--pink);font-size:10px;margin-bottom:14px;
+    }
+    .history{display:grid;gap:8px}
+    .history-item{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      background:#15121c;
+      border:3px solid #342b42;
+      font-size:8px;
+      line-height:1.8;
+    }
+    .history-item strong{color:var(--green);font-size:10px}
+    .history-empty{color:var(--muted);font-size:8px;line-height:1.8}
+    .delete{
+      color:var(--pink);background:transparent;padding:5px;font-size:9px;
+      box-shadow:none;
+    }
+
+    .footer{
+      color:#665d70;text-align:center;font-size:7px;line-height:1.8;
+      padding:4px 0 20px;
+    }
+
+    @media(max-width:560px){
+      body{padding:12px}
+      .card{padding:16px;border-width:3px;box-shadow:5px 5px 0 var(--shadow), inset 0 0 0 2px #0b0910}
+      .time-grid{grid-template-columns:1fr;gap:18px}
+      .actions{flex-direction:column}
+      .details{grid-template-columns:1fr}
+      input{font-size:16px;padding:14px 8px}
+      .btn-calc,.btn-reset{width:100%}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      *{scroll-behavior:auto!important;transition:none!important}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">PIXEL TIME<br>CALCULATOR</div>
+      <div class="pixel-dot" aria-hidden="true"></div>
+    </header>
+
+    <section class="card">
+      <div class="title">▸ HITUNG DURASI WAKTU</div>
+
+      <div class="time-grid">
+        <div class="field">
+          <label for="startHour">START — JAM : MENIT</label>
+          <div class="time-row">
+            <input id="startHour" type="number" min="0" max="23" inputmode="numeric" placeholder="08" aria-label="Jam mulai">
+            <div class="colon">:</div>
+            <input id="startMinute" type="number" min="0" max="59" inputmode="numeric" placeholder="30" aria-label="Menit mulai">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="stopHour">STOP — JAM : MENIT</label>
+          <div class="time-row">
+            <input id="stopHour" type="number" min="0" max="23" inputmode="numeric" placeholder="10" aria-label="Jam selesai">
+            <div class="colon">:</div>
+            <input id="stopMinute" type="number" min="0" max="59" inputmode="numeric" placeholder="15" aria-label="Menit selesai">
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-calc" id="calculate">CALCULATE ▶</button>
+        <button class="btn-reset" id="reset">RESET</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="result" aria-live="polite">
+        <small>TOTAL DURASI</small>
+        <span class="minutes" id="result">0</span><span class="unit">MENIT</span>
+      </div>
+
+      <div class="details">
+        <div class="detail">
+          <b id="hours">0</b>
+          <span>JAM</span>
+        </div>
+        <div class="detail">
+          <b id="mins">0</b>
+          <span>SISA MENIT</span>
+        </div>
+        <div class="detail">
+          <b id="clock">00:00</b>
+          <span>DURASI</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="history-title">▸ RIWAYAT PERHITUNGAN</div>
+      <div id="history" class="history">
+        <div class="history-empty">Belum ada perhitungan.</div>
+      </div>
+    </section>
+
+    <div class="footer">OFFLINE • PWA • DATA TERSIMPAN DI BROWSER</div>
+  </main>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fields = ["startHour","startMinute","stopHour","stopMinute"];
+
+  function val(id){
+    const n = Number($(id).value);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function calculate(saveHistory = true){
+    const sh = val("startHour"), sm = val("startMinute");
+    const eh = val("stopHour"), em = val("stopMinute");
+
+    if([sh,sm,eh,em].some(n => n < 0) || sh > 23 || eh > 23 || sm > 59 || em > 59){
+      alert("Masukkan waktu yang valid. Jam 00–23 dan menit 00–59.");
+      return;
+    }
+
+    const start = sh * 60 + sm;
+    let stop = eh * 60 + em;
+    let diff = stop - start;
+
+    // Jika stop lebih kecil dari start, dianggap melewati tengah malam.
+    if(diff < 0) diff += 24 * 60;
+
+    const h = Math.floor(diff / 60);
+    const m = diff % 60;
+
+    $("result").textContent = diff;
+    $("hours").textContent = h;
+    $("mins").textContent = m;
+    $("clock").textContent = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+
+    if(saveHistory) addHistory({sh,sm,eh,em,diff,h,m});
+  }
+
+  function addHistory(item){
+    let history = JSON.parse(localStorage.getItem("pixelTimeHistory") || "[]");
+    history.unshift({...item, id: Date.now()});
+    history = history.slice(0, 10);
+    localStorage.setItem("pixelTimeHistory", JSON.stringify(history));
+    renderHistory();
+  }
+
+  function renderHistory(){
+    const box = $("history");
+    const history = JSON.parse(localStorage.getItem("pixelTimeHistory") || "[]");
+
+    if(!history.length){
+      box.innerHTML = '<div class="history-empty">Belum ada perhitungan.</div>';
+      return;
+    }
+
+    box.innerHTML = history.map(x => `
+      <div class="history-item">
+        <div>
+          ${fmt(x.sh)}:${fmt(x.sm)} → ${fmt(x.eh)}:${fmt(x.em)}
+          <br><strong>${x.diff} MENIT</strong>
+        </div>
+        <button class="delete" onclick="removeHistory(${x.id})">✕</button>
+      </div>
+    `).join("");
+  }
+
+  function fmt(n){ return String(n).padStart(2,"0"); }
+
+  function removeHistory(id){
+    let history = JSON.parse(localStorage.getItem("pixelTimeHistory") || "[]");
+    history = history.filter(x => x.id !== id);
+    localStorage.setItem("pixelTimeHistory", JSON.stringify(history));
+    renderHistory();
+  }
+
+  function resetAll(){
+    fields.forEach(id => $(id).value = "");
+    $("result").textContent = "0";
+    $("hours").textContent = "0";
+    $("mins").textContent = "0";
+    $("clock").textContent = "00:00";
+    $("startHour").focus();
+  }
+
+  $("calculate").addEventListener("click", () => calculate(true));
+  $("reset").addEventListener("click", resetAll);
+
+  fields.forEach((id, i) => {
+    $(id).addEventListener("keydown", e => {
+      if(e.key === "Enter") calculate(true);
+      if(e.key === "ArrowRight" && i < fields.length-1) $(fields[i+1]).focus();
+      if(e.key === "ArrowLeft" && i > 0) $(fields[i-1]).focus();
+    });
+  });
+
+  renderHistory();
+
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(err => console.log("SW:", err));
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "Pixel Time Calculator",
+  "short_name": "Time Calc",
+  "description": "Kalkulator durasi waktu dalam menit bergaya Pixel Art.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#100d16",
+  "theme_color": "#17131f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
